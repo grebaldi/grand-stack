@@ -1,0 +1,9 @@
+{
+  "name": "grandstack",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "node": "^9.5.0"
+  }
+}
