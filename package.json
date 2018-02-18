@@ -7,6 +7,7 @@
     "start": "node -v"
   },
   "dependencies": {
+    "@zeit/next-css": "^0.1.2",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
     "isomorphic-unfetch": "^2.0.0",

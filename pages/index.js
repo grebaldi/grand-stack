@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import fetch from 'isomorphic-unfetch';
 
+import styles from './style.css';
+
 export default class extends Component {
 	static async getInitialProps() {
 		const res = await fetch('http://127.0.0.1:3000/list');
@@ -39,7 +41,7 @@ export default class extends Component {
 
 	render() {
 		return (
-			<div>
+			<div className={styles.container}>
 				<form onSubmit={this.add}>
 					<input
 						type="text"
