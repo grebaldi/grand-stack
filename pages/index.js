@@ -1,22 +1,20 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import fetch from 'isomorphic-unfetch';
 import uuid from 'uuid';
+
 import {blog} from '../domain/command';
+import {provider} from '../framework/apollo';
+
+import {BlogList} from '../components';
 
 import styles from './style.css';
 
+@provider
 export default class extends Component {
-	static async getInitialProps() {
-		const res = await fetch('http://127.0.0.1:3000/list');
-		const statusCode = res.statusCode > 200 ? res.statusCode : false;
-		const json = await res.json();
-
-		return {statusCode, items: json};
-	}
-
 	state = {
 		input: '',
-		items: this.props.items
+		items: []
 	};
 
 	updateInput = event =>
@@ -24,10 +22,14 @@ export default class extends Component {
 
 	add = event => {
 		const {input, items} = this.state;
+		const blogData = {
+			id: uuid.v4(),
+			title: input
+		};
 
 		this.setState({
 			input: '',
-			items: [...items, input]
+			items: [...items, blogData]
 		});
 
 		event.preventDefault();
@@ -37,10 +39,7 @@ export default class extends Component {
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify(blog.addBlog({
-				id: uuid.v4(),
-				title: input
-			}))
+			body: JSON.stringify(blog.addBlog(blogData))
 		});
 	};
 
@@ -56,9 +55,10 @@ export default class extends Component {
 						/>
 					<button type="submit">Add</button>
 				</form>
+				<BlogList/>
 				<ul>
 					{this.state.items.map(item => (
-						<li key={item}>{item}</li>
+						<li key={item.id}>{item.title}</li>
 					))}
 				</ul>
 			</div>
