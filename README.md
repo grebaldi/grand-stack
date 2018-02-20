@@ -6,5 +6,7 @@ TODOS:
 * [x] Make CSS modules work with Next
 * [x] Write simple GraphQL Schema
 * [x] Connect GraphQL with neo4j
-* [ ] Implement command bus based on RxJs
+* [x] Implement message bus based on RxJs
+* [x] Implement message bus middleware for express
+* [ ] Refactor message bus implementation
 * [ ] Make Apollo Client work with Next

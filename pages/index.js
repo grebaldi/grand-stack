@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import fetch from 'isomorphic-unfetch';
+import uuid from 'uuid';
+import {blog} from '../domain/command';
 
 import styles from './style.css';
 
@@ -30,12 +32,15 @@ export default class extends Component {
 
 		event.preventDefault();
 
-		fetch('/add', {
+		fetch('/command/dispatch', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({input})
+			body: JSON.stringify(blog.addBlog({
+				id: uuid.v4(),
+				title: input
+			}))
 		});
 	};
 

@@ -5,14 +5,21 @@ const neo4j = require('neo4j-driver').v1;
 const graphqlHTTP = require('express-graphql');
 const {makeExecutableSchema} = require('graphql-tools');
 
+const {createMessageBus, createMessageBusMiddleware} = require('./framework/cqrs');
+
 const {typeDefs, resolvers} = require('./domain/model');
+const commandCreators = require('./domain/command').default;
+const commandHandlers = require('./domain/commandHandler').default;
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 const driver = neo4j.driver('bolt://127.0.0.1:7687');
-const schema =
+const graphqlSchema = makeExecutableSchema({typeDefs, resolvers});
+const commandBus = createMessageBus({handlers: commandHandlers});
+
+commandHandlers.forEach(commandHandler => commandBus.subscribe(commandHandler.type, commandHandler));
 
 app.prepare().then(() => {
 	const server = express();
@@ -22,23 +29,21 @@ app.prepare().then(() => {
 	server.use('/graphql', graphqlHTTP(request => {
 		const session = driver.session();
 		return {
-			schema: makeExecutableSchema({typeDefs, resolvers}),
-			graphiql: true,
+			schema: graphqlSchema,
+			graphiql: dev,
 			context: {session}
 		};
 	}));
 
-	server.post('/add', async (req, res) => {
-		const session = driver.session();
-		const {input} = req.body;
+	server.use('/command', createMessageBusMiddleware({
+		creators: commandCreators,
+		messageBus: commandBus,
+		contextFactory: () => {
+			const session = driver.session();
 
-		await session.run(
-			`CREATE (blog:Blog {title: $name}) RETURN blog`,
-			{name: input}
-		);
-
-		session.close();
-	});
+			return {session};
+		}
+	}));
 
 	server.get('/list', async (req, res) => {
 		const session = driver.session();
@@ -72,4 +77,7 @@ const cleanup = () => {
 process.on('SIGINT', cleanup);
 process.on('SIGUSR1', cleanup);
 process.on('SIGUSR2', cleanup);
-process.on('uncaughtException', cleanup);
+process.on('uncaughtException', (ex) => {
+	console.error(ex);
+	cleanup();
+});
