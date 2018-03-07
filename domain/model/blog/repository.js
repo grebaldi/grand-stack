@@ -21,6 +21,17 @@ export const findOneById = async (session, id) => {
 	}
 };
 
+export const findOneByPost = async (session, {id}) => {
+	const result = await session.run(
+		`MATCH (:Post {id: $id})-[:POSTED_IN]->(blog:Blog) RETURN blog`,
+		{id}
+	);
+
+	if (result.records.length) {
+		return result.records[0]._fields[0].properties;
+	}
+};
+
 export const add = async (session, blog) => {
 	const result = await session.run(
 		`CREATE (blog:Blog {

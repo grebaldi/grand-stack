@@ -14,6 +14,6 @@ TODOS:
 * [x] Add more models
 * [x] Add blog detail page
 * [x] Create Interface for adding posts
-* [ ] Add post detail page
+* [x] Add post detail page
 * [ ] Implement event bus
 * [ ] Make everything configurable via ENV variables

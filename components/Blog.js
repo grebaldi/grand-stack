@@ -11,6 +11,7 @@ import Link from 'next/link';
 			id,
 			title,
 			posts {
+				id,
 				title
 			}
 		}
@@ -43,7 +44,11 @@ export default class extends Component {
 
 				<ul>
 					{blog.posts.map(post => (
-						<li>{post.title}</li>
+						<li>
+							<Link href={{pathname: '/post', query: {postId: post.id}}}>
+								<a>{post.title}</a>
+							</Link>
+						</li>
 					))}
 				</ul>
 			</div>
