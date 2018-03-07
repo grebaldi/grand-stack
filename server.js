@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const next = require('next');
+const cors = require('cors');
 const neo4j = require('neo4j-driver').v1;
 const graphqlHTTP = require('express-graphql');
 const {makeExecutableSchema} = require('graphql-tools');
@@ -17,7 +18,9 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 const driver = neo4j.driver('bolt://127.0.0.1:7687');
 const graphqlSchema = makeExecutableSchema({typeDefs, resolvers});
-const commandBus = createMessageBus({handlers: commandHandlers});
+const commandBus = createMessageBus({
+	errorHandler: () => {}
+});
 
 commandHandlers.forEach(commandHandler => commandBus.subscribe(commandHandler.type, commandHandler));
 
@@ -26,7 +29,7 @@ app.prepare().then(() => {
 
 	server.use(bodyParser.json());
 
-	server.use('/graphql', graphqlHTTP(request => {
+	server.use('/graphql', cors(), graphqlHTTP(request => {
 		const session = driver.session();
 		return {
 			schema: graphqlSchema,
@@ -44,17 +47,6 @@ app.prepare().then(() => {
 			return {session};
 		}
 	}));
-
-	server.get('/list', async (req, res) => {
-		const session = driver.session();
-		const result = await session.run(
-			`MATCH (item:Item) RETURN item.name`
-		);
-
-		res.setHeader('Content-Type', 'application/json');
-    	res.send(JSON.stringify(result.records.map(record => record._fields[0])));
-		session.close();
-	});
 
 	server.get('*', (req, res) => {
 		return handle(req, res);

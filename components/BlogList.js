@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import {graphql} from 'react-apollo';
 import gql from 'graphql-tag';
 
+import Link from 'next/link';
+
 const allBlogs = gql`
 	query {
 		blogs {
@@ -29,7 +31,11 @@ export default class extends Component {
 		return (
 			<ul>
 				{this.props.data.blogs && this.props.data.blogs.map(blog => (
-					<li key={blog.id}>{blog.title}</li>
+					<li key={blog.id}>
+						<Link href={{pathname: '/blog', query: {id: blog.id}}}>
+							<a>{blog.title}</a>
+						</Link>
+					</li>
 				))}
 			</ul>
 		)

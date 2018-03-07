@@ -1,7 +1,8 @@
 export default /* GraphQL */`
-	type Blog {
+	type Post {
+		blog_id: ID!
 		id: ID!
 		title: String!
-		posts: [Post!]
+		content: String!
 	}
 `

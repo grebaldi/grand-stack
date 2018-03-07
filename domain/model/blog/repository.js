@@ -17,7 +17,7 @@ export const findOneById = async (session, id) => {
 	);
 
 	if (result.records.length) {
-		return result.records[0]._fields.properties;
+		return result.records[0]._fields[0].properties;
 	}
 };
 

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {ApolloClient} from 'apollo-client';
-import {ApolloProvider} from 'react-apollo';
+import {ApolloProvider, getDataFromTree} from 'react-apollo';
 import {HttpLink} from 'apollo-link-http';
 import {InMemoryCache} from 'apollo-cache-inmemory';
 import fetch from 'isomorphic-unfetch';
@@ -42,9 +42,9 @@ export default ComposedComponent => class extends Component {
 				</ApolloProvider>,
 				{
 					router: {
-						asPath: ctx.asPath,
-						pathname: ctx.pathname,
-						query: ctx.query
+						asPath: context.asPath,
+						pathname: context.pathname,
+						query: context.query
 					}
 				}
 			)
@@ -52,6 +52,9 @@ export default ComposedComponent => class extends Component {
 			// Prevent Apollo Client GraphQL errors from crashing SSR.
 			// Handle them in components via the data.error prop:
 			// http://dev.apollodata.com/react/api-queries.html#graphql-query-data-error
+			console.log('------------------------------');
+			console.log(error);
+			console.log('------------------------------');
 		}
 
 		if (!process.browser) {

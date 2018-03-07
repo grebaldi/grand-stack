@@ -11,4 +11,7 @@ TODOS:
 * [x] Make Apollo Client work with Next
 * [ ] Refactor message bus implementation
 * [ ] Refactor Apollo integration
-* [ ] Add more models
+* [x] Add more models
+* [x] Add blog detail page
+* [ ] Implement event bus
+* [ ] Make everything configurable via ENV variables
