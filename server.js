@@ -19,7 +19,7 @@ const handle = app.getRequestHandler();
 const driver = neo4j.driver('bolt://127.0.0.1:7687');
 const graphqlSchema = makeExecutableSchema({typeDefs, resolvers});
 const commandBus = createMessageBus({
-	errorHandler: () => {}
+	errorHandler: error => console.error(error)
 });
 
 commandHandlers.forEach(commandHandler => commandBus.subscribe(commandHandler.type, commandHandler));

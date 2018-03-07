@@ -1,6 +1,9 @@
 export const findAllByBlog = async (session, blog) => {
 	const result = await session.run(
-		`MATCH (post:Post {blog_id: $blogId}) RETURN post`,
+		`
+			MATCH (:Blog {id: $blogId})<-[:POSTED_IN]-(post)
+			RETURN post
+		`,
 		{blogId: blog.id}
 	);
 
@@ -19,7 +22,7 @@ export const findOneById = async (session, id) => {
 	);
 
 	if (result.records.length) {
-		return result.records[0]._fields.properties;
+		return result.records[0]._fields[0].properties;
 	}
 };
 
@@ -31,8 +34,8 @@ export const add = async (session, blog, post) => {
 			CREATE (post:Post {
 				id: $id,
 				title: $title,
-				content: $content
-			})->[postedIn:POSTED_IN]->(blog)
+				text: $text
+			})-[postedIn:POSTED_IN]->(blog)
 			RETURN post
 		`,
 		Object.assign({}, {blogId: blog.id}, post)
